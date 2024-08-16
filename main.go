@@ -30,15 +30,17 @@ type handler struct {
 }
 
 func (h *handler) handleConn(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
 	channelID := r.PathValue("channel_id")
 	if channelID == "" {
 		return
 	}
+	fmt.Println("New connection in room " + channelID)
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		panic(err)
 	}
-	h.dispatcher.RegisterClient(channelID, ws)
+	h.dispatcher.RegisterClient(&Client{ChannelID: channelID, Name: name, Ws: ws})
 }
 
 func newHandler() handler {
