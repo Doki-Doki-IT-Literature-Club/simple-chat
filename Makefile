@@ -1,8 +1,8 @@
-build_bin:
-	GOOS=linux CGO_ENABLED=0 go build -o simple-chat .
-
-build: build_bin 
+build: 
 	docker build -t simple-chat:latest .
+
+run:
+	docker-compose up
 
 lint:
 	go fmt ./...
