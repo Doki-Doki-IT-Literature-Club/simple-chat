@@ -20,8 +20,6 @@ FROM alpine
 
 WORKDIR /simple-chat
 
-RUN apk add --no-cache curl
-
 COPY --from=builder /simple-chat/simple-chat .
 
 CMD ["./simple-chat"]
