@@ -11,20 +11,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/segmentio/kafka-go"
-	"github.com/segmentio/kafka-go/sasl/scram"
 )
 
 const (
 	topicName = "messages"
-	userName  = "user1"
-	password  = "..."
+	kafkaAddr = "kafka:9092"
 )
-
-var brokers = []string{
-	"simple-chat-kafka-controller-0.simple-chat-kafka-controller-headless.default.svc.cluster.local:9092",
-	"simple-chat-kafka-controller-1.simple-chat-kafka-controller-headless.default.svc.cluster.local:9092",
-	"simple-chat-kafka-controller-2.simple-chat-kafka-controller-headless.default.svc.cluster.local:9092",
-}
 
 type Client struct {
 	Name      string
@@ -114,10 +106,6 @@ func (d *Dispatcher) Dispatch() {
 }
 
 func NewDispatcher() *Dispatcher {
-	mechanism, err := scram.Mechanism(scram.SHA512, userName, password)
-	if err != nil {
-		panic(err)
-	}
 	groupUUID, err := uuid.NewRandom()
 	if err != nil {
 		panic(err)
@@ -125,19 +113,31 @@ func NewDispatcher() *Dispatcher {
 	groupName := groupUUID.String()
 
 	dialer := &kafka.Dialer{
-		Timeout:       10 * time.Second,
-		DualStack:     true,
-		SASLMechanism: mechanism,
+		Timeout:   10 * time.Second,
+		DualStack: true,
 	}
+
+	hasConnected := false
+	for !hasConnected {
+		conn, err := dialer.DialLeader(context.Background(), "tcp", kafkaAddr, topicName, 0)
+		if err != nil {
+			slog.Error("Failed to connect to kafka: " + err.Error())
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		conn.Close()
+		hasConnected = true
+	}
+
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: brokers,
+		Brokers: []string{kafkaAddr},
 		GroupID: groupName,
 		Topic:   topicName,
 		Dialer:  dialer,
 	})
 
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  brokers,
+		Brokers:  []string{kafkaAddr},
 		Topic:    topicName,
 		Balancer: &kafka.Hash{},
 		Dialer:   dialer,
@@ -150,6 +150,7 @@ func NewDispatcher() *Dispatcher {
 		kafkaReader: reader,
 		kafkaWriter: writer,
 	}
+
 	go d.Dispatch()
 	return d
 }
