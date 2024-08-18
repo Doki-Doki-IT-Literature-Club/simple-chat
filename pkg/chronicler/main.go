@@ -13,13 +13,20 @@ type Repository struct {
 	conn *pgx.Conn
 }
 
-func NewRepository(user string, password string, dbHost string, dbName string) (*Repository, error) {
+type Config struct {
+	DBUser     string
+	DBPassword string
+	DBHost     string
+	DBName     string
+}
+
+func NewRepository(config Config) (*Repository, error) {
 	connString := fmt.Sprintf(
 		"postgres://%s:%s@%s/%s",
-		user,
-		password,
-		dbHost,
-		dbName,
+		config.DBUser,
+		config.DBPassword,
+		config.DBHost,
+		config.DBName,
 	)
 
 	var conn *pgx.Conn

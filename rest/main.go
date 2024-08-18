@@ -5,15 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/LeperGnome/simple-chat/pkg/chronicler"
 )
 
 func main() {
-	fmt.Println("Starting rest app...")
-
-	repo, err := chronicler.NewRepository(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+	repo, err := chronicler.NewRepository(getDBConfig())
 
 	if err != nil {
 		panic(err)

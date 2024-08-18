@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/LeperGnome/simple-chat/pkg/chronicler"
@@ -23,7 +22,7 @@ type Message struct {
 }
 
 func main() {
-	repo, err := chronicler.NewRepository(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+	repo, err := chronicler.NewRepository(getDBConfig())
 
 	if err != nil {
 		panic(err)
