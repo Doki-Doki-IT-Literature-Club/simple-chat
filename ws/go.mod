@@ -1,4 +1,4 @@
-module github.com/LeperGnome/simple-chat
+module github.com/LeperGnome/simple-chat/ws
 
 go 1.22.2
 
