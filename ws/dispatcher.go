@@ -38,6 +38,7 @@ type Dispatcher struct {
 }
 
 func (d *Dispatcher) RegisterClient(client *Client) {
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
@@ -54,6 +55,9 @@ func (d *Dispatcher) RemoveClient(client *Client) {
 		return
 	}
 	conns = slices.DeleteFunc(conns, func(c *Client) bool { return c == client })
+
+	d.conns[client.ChannelID] = conns
+
 	client.Ws.Close()
 }
 
