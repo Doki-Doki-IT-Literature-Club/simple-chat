@@ -19,38 +19,54 @@ services:
 
   ws-live-reload:
     image: cosmtrek/air
+    container_name: ws-live-reload
     working_dir: /app
     volumes:
-      - ./ws:/app
+      - ws-app:/app
     depends_on:
       - kafka
 
   rest-live-reload:
     image: cosmtrek/air
+    container_name: rest-live-reload
     working_dir: /app
     volumes:
-      - ./rest:/app
+      - rest-app:/app
+      - packages:/pkg
     depends_on:
-      - postgres
+      - chronicler-db
+    environment:
+      DB_USER: $CHRONICLER_DB_USER
+      DB_PASSWORD: $CHRONICLER_DB_PASS
+      DB_NAME: $CHRONICLER_DB_NAME
+      DB_HOST: $CHRONICLER_DB_HOST
 
-  chronicler:
+  chronicler-live-reload:
     image: cosmtrek/air
+    container_name: chronicler-live-reload
     working_dir: /app
     volumes:
-      - ./chronicler:/app
+      - chronicler-app:/app
+      - packages:/pkg
     depends_on:
       - kafka
-      - postgres
-
-  postgres:
-    image: postgres:latest
-    container_name: postgres
+      - chronicler-db
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_database
+      DB_USER: $CHRONICLER_DB_USER
+      DB_PASSWORD: $CHRONICLER_DB_PASS
+      DB_NAME: $CHRONICLER_DB_NAME
+      DB_HOST: $CHRONICLER_DB_HOST
+
+
+  chronicler-db:
+    image: postgres:latest
+    container_name: chronicler-db
+    environment:
+      POSTGRES_USER: $CHRONICLER_DB_USER
+      POSTGRES_PASSWORD: $CHRONICLER_DB_PASS
+      POSTGRES_DB: $CHRONICLER_DB_NAME
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - chronicler-db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
@@ -64,3 +80,35 @@ services:
     depends_on:
       - ws-live-reload
       - rest-live-reload
+
+volumes:
+  rest-app:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './rest'
+      o: bind
+  ws-app:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './ws'
+      o: bind
+  chronicler-app:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './chronicler'
+      o: bind
+  chronicler-db:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './postgres_data'
+      o: bind
+  packages:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './pkg'
+      o: bind
