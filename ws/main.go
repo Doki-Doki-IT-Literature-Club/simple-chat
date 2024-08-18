@@ -19,6 +19,10 @@ func main() {
 
 	h := newHandler()
 	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL)
+		w.Write([]byte("Hello, world!"))
+	})
 	mux.HandleFunc("/channels/{channel_id}", h.handleConn)
 
 	fmt.Println("Starting server at " + addr)
@@ -30,6 +34,8 @@ type handler struct {
 }
 
 func (h *handler) handleConn(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("New connection")
+
 	name := r.URL.Query().Get("name")
 	channelID := r.PathValue("channel_id")
 	if channelID == "" {
