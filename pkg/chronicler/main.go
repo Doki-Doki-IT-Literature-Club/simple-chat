@@ -62,11 +62,11 @@ func (r *Repository) CreateMessageTable() error {
 }
 
 type Message struct {
-	ID        string
-	Content   string
-	CreatedAt time.Time
-	AuthorID  string
-	ChannelID string
+	ID        string    `json:"id"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	AuthorID  string    `json:"author_id"`
+	ChannelID string    `json:"channel_id"`
 }
 
 // it shouldn't be here

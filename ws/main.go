@@ -12,6 +12,9 @@ var upgrader = websocket.Upgrader{
 	HandshakeTimeout: time.Second * 10,
 	WriteBufferSize:  1_000,
 	ReadBufferSize:   1_000,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func main() {

@@ -70,6 +70,16 @@ services:
     ports:
       - "5432:5432"
 
+  chat-front:
+    image: node:22-alpine3.19
+    container_name: chat-front
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - chat-front:/app
+    command: npm run dev
+
   api-gateway:
     image: nginx:alpine
     container_name: api-gateway
@@ -111,4 +121,10 @@ volumes:
     driver_opts:
       type: 'none'
       device: './pkg'
+      o: bind
+  chat-front:
+    driver: local
+    driver_opts:
+      type: 'none'
+      device: './chat-front'
       o: bind
