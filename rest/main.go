@@ -2,23 +2,23 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/LeperGnome/simple-chat/pkg/chronicler"
 )
 
-func main() {
-	repo, err := chronicler.NewRepository(getDBConfig())
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		next.ServeHTTP(w, r)
+	})
+}
 
-	if err != nil {
-		panic(err)
-	}
-
-	repo.CreateMessageTable()
-
-	http.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+func newMessageHandler(repo *chronicler.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		channelID := r.URL.Query().Get("channel_id")
 
 		if channelID == "" {
@@ -34,8 +34,6 @@ func main() {
 			return
 		}
 
-		fmt.Println(messages)
-
 		jsonBytes, err := json.Marshal(messages)
 
 		if err != nil {
@@ -46,6 +44,20 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonBytes)
 	})
+}
+
+func main() {
+	repo, err := chronicler.NewRepository(getDBConfig())
+
+	if err != nil {
+		panic(err)
+	}
+
+	repo.CreateMessageTable()
+
+	messageHandler := newMessageHandler(repo)
+
+	http.Handle("/messages", corsMiddleware(messageHandler))
 	http.ListenAndServe(":8080", nil)
 
 }
