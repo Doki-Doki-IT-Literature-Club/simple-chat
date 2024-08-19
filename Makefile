@@ -3,6 +3,8 @@ build:
 
 up:
 	mkrdir postgres_data && docker-compose up
+down:
+	docker-compose down
 
 lint:
 	go fmt ./...
