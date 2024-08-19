@@ -1,4 +1,4 @@
-package main
+package domain
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// go to settings
 const (
 	topicName = "messages"
 	kafkaAddr = "kafka:9092"
