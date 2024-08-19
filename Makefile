@@ -1,8 +1,8 @@
 build: 
 	docker build -t simple-chat:latest .
 
-run:
-	docker-compose up
+up:
+	mkrdir postgres_data && docker-compose up
 
 lint:
 	go fmt ./...
