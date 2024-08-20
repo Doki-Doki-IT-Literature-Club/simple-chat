@@ -1,6 +1,6 @@
 module github.com/LeperGnome/simple-chat
 
-go 1.22.2
+go 1.22.3
 
 require (
 	github.com/LeperGnome/simple-chat/pkg/chronicler v0.0.0-20240818150125-9b63d8ce2460

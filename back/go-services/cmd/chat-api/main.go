@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/LeperGnome/simple-chat/pkg/chronicler"
+	infrastructure "github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
 )
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -17,7 +17,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func newMessageHandler(repo *chronicler.Repository) http.Handler {
+func newMessageHandler(repo *infrastructure.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		channelID := r.URL.Query().Get("channel_id")
 
@@ -47,7 +47,7 @@ func newMessageHandler(repo *chronicler.Repository) http.Handler {
 }
 
 func main() {
-	repo, err := chronicler.NewRepository(getDBConfig())
+	repo, err := infrastructure.NewRepository(infrastructure.GetDBConfig())
 
 	if err != nil {
 		panic(err)

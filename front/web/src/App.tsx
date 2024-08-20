@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import "./App.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import "./App.css";
 
 const useSaveToLocalStorage = (key: string, value: string) => {
   const [state, setState] = useState(() => {
@@ -27,13 +27,14 @@ const useMessageHistory = (channelId: string) => {
         `http://localhost:8080/rest/messages?channel_id=${channelId}`
       );
       return response.json() as Promise<
-        {
-          id: string;
-          content: string;
-          author_id: string;
-          channel_id: string;
-          created_at: string;
-        }[]
+        | {
+            id: string;
+            content: string;
+            author_id: string;
+            channel_id: string;
+            created_at: string;
+          }[]
+        | null
       >;
     },
     enabled: Boolean(channelId),
@@ -111,7 +112,7 @@ function App() {
         </button>
       </div>
       <div style={{ color: "white" }}>
-        {data.map((message) => (
+        {data?.map((message) => (
           <div key={message.id}>
             <div>{message.author_id}</div>
             <div>{message.content}</div>

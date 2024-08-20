@@ -1,4 +1,4 @@
-package chronicler
+package infrastructure
 
 import (
 	"context"

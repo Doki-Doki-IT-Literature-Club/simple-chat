@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/LeperGnome/simple-chat/pkg/chronicler"
+	infrastructure "github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -22,7 +22,7 @@ type Message struct {
 }
 
 func main() {
-	repo, err := chronicler.NewRepository(getDBConfig())
+	repo, err := infrastructure.NewRepository(infrastructure.GetDBConfig())
 
 	if err != nil {
 		panic(err)
@@ -64,7 +64,7 @@ func main() {
 		json.Unmarshal(msg.Value, &receivedMessage)
 		slog.Info("Got new message from kafka", slog.Any("message", receivedMessage))
 
-		newMessage := chronicler.NewMessage(receivedMessage.Content, receivedMessage.From, receivedMessage.Channel)
+		newMessage := infrastructure.NewMessage(receivedMessage.Content, receivedMessage.From, receivedMessage.Channel)
 		err = repo.InsertMessage(newMessage)
 
 		if err != nil {
