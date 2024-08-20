@@ -1,10 +1,9 @@
-package main
+package infrastructure
 
 import (
 	"log/slog"
 	"os"
 
-	"github.com/LeperGnome/simple-chat/pkg/chronicler"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -15,7 +14,7 @@ type DBEnvConfig struct {
 	DBName     string `envconfig:"DB_NAME" required:"true"`
 }
 
-func getDBConfig() chronicler.Config {
+func GetDBConfig() Config {
 	dbEnvConfig := DBEnvConfig{}
 	err := envconfig.Process("", &dbEnvConfig)
 	if err != nil {
@@ -23,10 +22,5 @@ func getDBConfig() chronicler.Config {
 		os.Exit(1)
 	}
 
-	return chronicler.Config{
-		DBUser:     dbEnvConfig.DBUser,
-		DBPassword: dbEnvConfig.DBPassword,
-		DBHost:     dbEnvConfig.DBHost,
-		DBName:     dbEnvConfig.DBName,
-	}
+	return Config(dbEnvConfig)
 }
