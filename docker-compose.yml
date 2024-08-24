@@ -1,10 +1,10 @@
-# version: "3"
+version: "3"
 
 services:
   session-keeper:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/session-keeper/Dockerfile
+      dockerfile: ./build/dev/session-keeper/Dockerfile
     image: session-keeper-live
     container_name: ws-live-reload
     environment:
@@ -17,7 +17,7 @@ services:
   chat-api:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/chat-api/Dockerfile
+      dockerfile: ./build/dev/chat-api/Dockerfile
     image: chat-api-live
     container_name: chat-api
     working_dir: /app
@@ -46,7 +46,7 @@ services:
   chronicler:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/chronicler/Dockerfile
+      dockerfile: ./build/dev/chronicler/Dockerfile
     image: chronicler-live
     container_name: chronicler
     working_dir: /app

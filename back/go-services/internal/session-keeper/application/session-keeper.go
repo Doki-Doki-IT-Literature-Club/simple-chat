@@ -33,7 +33,7 @@ func (s *Server) Run() error {
 	return http.ListenAndServe(addr, mux)
 }
 
-func NewServer(config Config) *Server {
+func NewServer(config Config, bus dom.MessageBus) *Server {
 	return &Server{
 		upgrader: websocket.Upgrader{
 			HandshakeTimeout: config.HandshakeTimeout,
@@ -43,7 +43,7 @@ func NewServer(config Config) *Server {
 				return true
 			},
 		},
-        dispatcher: dom.NewDispatcher(),
+        dispatcher: dom.NewDispatcher(bus),
         config: config,
 	}
 }

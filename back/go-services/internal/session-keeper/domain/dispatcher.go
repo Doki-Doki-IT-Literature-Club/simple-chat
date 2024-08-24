@@ -1,22 +1,10 @@
 package domain
 
 import (
-	"context"
-	"encoding/json"
 	"log/slog"
 	"slices"
 	"sync"
-	"time"
-
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/segmentio/kafka-go"
-)
-
-// go to settings
-const (
-	topicName = "messages"
-	kafkaAddr = "kafka:9092"
 )
 
 type Client struct {
@@ -25,21 +13,13 @@ type Client struct {
 	Ws        *websocket.Conn
 }
 
-type Message struct {
-	From    string `json:"from"`
-	Content string `json:"content"`
-	Channel string `json:"channel"`
-}
-
 type Dispatcher struct {
-	conns       map[string][]*Client
-	mu          sync.RWMutex
-	kafkaReader *kafka.Reader
-	kafkaWriter *kafka.Writer
+	conns map[string][]*Client
+	mu    sync.RWMutex
+	bus   MessageBus
 }
 
 func (d *Dispatcher) RegisterClient(client *Client) {
-
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
@@ -74,28 +54,18 @@ func (d *Dispatcher) readFromClient(client *Client) error {
 			From:    client.Name,
 			Channel: client.ChannelID,
 		}
-		msgb, err := json.Marshal(newMessage)
-		if err != nil {
-			continue // TODO?
-		}
-		d.kafkaWriter.WriteMessages(context.TODO(), kafka.Message{
-			Key:   []byte("const"),
-			Value: msgb,
-		})
-		slog.Info("Got new message from kafka", slog.Any("message", newMessage))
+		slog.Info("Got new message from ws", slog.Any("message", newMessage))
+		d.bus.Write(newMessage)
 	}
 }
 
 func (d *Dispatcher) Dispatch() {
 	for {
-		msg, err := d.kafkaReader.ReadMessage(context.Background())
+		newMessage, err := d.bus.Read()
 		if err != nil {
-			slog.Error("Failed reading message from kafka: " + err.Error())
-			break // TODO
+			break
 		}
-		var newMessage Message
-		json.Unmarshal(msg.Value, &newMessage)
-		slog.Info("Got new message from kafka", slog.Any("message", newMessage))
+		slog.Info("Got new message from bus", slog.Any("message", newMessage))
 
 		channelConns, ok := d.conns[newMessage.Channel]
 		if !ok {
@@ -110,50 +80,11 @@ func (d *Dispatcher) Dispatch() {
 	}
 }
 
-func NewDispatcher() *Dispatcher {
-	groupUUID, err := uuid.NewRandom()
-	if err != nil {
-		panic(err)
-	}
-	groupName := groupUUID.String()
-
-	dialer := &kafka.Dialer{
-		Timeout:   10 * time.Second,
-		DualStack: true,
-	}
-
-	hasConnected := false
-	for !hasConnected {
-		conn, err := dialer.DialLeader(context.Background(), "tcp", kafkaAddr, topicName, 0)
-		if err != nil {
-			slog.Error("Failed to connect to kafka: " + err.Error())
-			time.Sleep(5 * time.Second)
-			continue
-		}
-		conn.Close()
-		hasConnected = true
-	}
-
-	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{kafkaAddr},
-		GroupID: groupName,
-		Topic:   topicName,
-		Dialer:  dialer,
-	})
-
-	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{kafkaAddr},
-		Topic:    topicName,
-		Balancer: &kafka.Hash{},
-		Dialer:   dialer,
-	})
-	writer.AllowAutoTopicCreation = true
-
+func NewDispatcher(bus MessageBus) *Dispatcher {
 	d := &Dispatcher{
-		mu:          sync.RWMutex{},
-		conns:       map[string][]*Client{},
-		kafkaReader: reader,
-		kafkaWriter: writer,
+		mu:    sync.RWMutex{},
+		conns: map[string][]*Client{},
+		bus:   bus,
 	}
 
 	go d.Dispatch()
