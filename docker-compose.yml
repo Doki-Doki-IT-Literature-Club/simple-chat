@@ -3,26 +3,26 @@ version: "3"
 services:
   session-keeper:
     build:
-      context: ./back/go-services
+      context: ./back/messaging
       dockerfile: ./build/dev/session-keeper/Dockerfile
     image: session-keeper-live
     container_name: ws-live-reload
     environment:
       - PORT=8081
     volumes:
-      - go-services:/app
+      - messaging:/app
     depends_on:
       - kafka
 
   chat-api:
     build:
-      context: ./back/go-services
+      context: ./back/messaging
       dockerfile: ./build/dev/chat-api/Dockerfile
     image: chat-api-live
     container_name: chat-api
     working_dir: /app
     volumes:
-      - go-services:/app
+      - messaging:/app
     depends_on:
       - chronicler-db
     environment:
@@ -45,13 +45,13 @@ services:
 
   chronicler:
     build:
-      context: ./back/go-services
+      context: ./back/messaging
       dockerfile: ./build/dev/chronicler/Dockerfile
     image: chronicler-live
     container_name: chronicler
     working_dir: /app
     volumes:
-      - go-services:/app
+      - messaging:/app
     depends_on:
       - kafka
       - chronicler-db
@@ -104,11 +104,11 @@ services:
       - chat-api
 
 volumes:
-  go-services:
+  messaging:
     driver: local
     driver_opts:
       type: 'none'
-      device: ${PWD}/back/go-services
+      device: ${PWD}/back/messaging
       o: bind
   chronicler-db:
     driver: local

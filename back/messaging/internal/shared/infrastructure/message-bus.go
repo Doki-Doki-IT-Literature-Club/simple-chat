@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/LeperGnome/simple-chat/internal/session-keeper/domain"
+	"github.com/LeperGnome/simple-chat/internal/shared/domain"
 	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 )
@@ -41,15 +41,10 @@ func (k *KafkaMessageBus) Write(message domain.Message) error {
 }
 
 func NewKafkaMessageBus(
+	groupID string,
 	topicName string,
 	kafkaAddr string,
 ) (*KafkaMessageBus, error) {
-	groupUUID, err := uuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
-	groupName := groupUUID.String()
-
 	dialer := &kafka.Dialer{
 		Timeout:   10 * time.Second,
 		DualStack: true,
@@ -69,7 +64,7 @@ func NewKafkaMessageBus(
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: []string{kafkaAddr},
-		GroupID: groupName,
+		GroupID: groupID,
 		Topic:   topicName,
 		Dialer:  dialer,
 	})

@@ -5,6 +5,8 @@ up:
 	mkdir -p postgres_data && docker compose up
 down:
 	docker compose down
+lint:
+	cd ./back/messaging/ && go fmt ./...
 
 logs:
 	kubectl logs -f deployment/simple-chat

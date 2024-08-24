@@ -1,12 +1,20 @@
-package main
+package application
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 
-	infrastructure "github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
+	"github.com/LeperGnome/simple-chat/internal/shared/domain"
 )
+
+func NewServer(addr string, repo domain.MessageRepository) *http.Server {
+	mux := http.NewServeMux()
+	mux.Handle("/messages", corsMiddleware(newMessageHandler(repo)))
+
+	server := &http.Server{Addr: addr, Handler: mux}
+	return server
+}
 
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -17,17 +25,15 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func newMessageHandler(repo *infrastructure.Repository) http.Handler {
+func newMessageHandler(repo domain.MessageRepository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		channelID := r.URL.Query().Get("channel_id")
-
 		if channelID == "" {
 			http.Error(w, "channel_id is required", http.StatusBadRequest)
 			return
 		}
 
 		messages, err := repo.GetMessages(channelID)
-
 		if err != nil {
 			log.Printf("Error getting messages: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -35,7 +41,6 @@ func newMessageHandler(repo *infrastructure.Repository) http.Handler {
 		}
 
 		jsonBytes, err := json.Marshal(messages)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -44,20 +49,4 @@ func newMessageHandler(repo *infrastructure.Repository) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonBytes)
 	})
-}
-
-func main() {
-	repo, err := infrastructure.NewRepository(infrastructure.GetDBConfig())
-
-	if err != nil {
-		panic(err)
-	}
-
-	repo.CreateMessageTable()
-
-	messageHandler := newMessageHandler(repo)
-
-	http.Handle("/messages", corsMiddleware(messageHandler))
-	http.ListenAndServe(":8080", nil)
-
 }

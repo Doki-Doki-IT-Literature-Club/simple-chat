@@ -6,6 +6,7 @@ import (
 
 	"github.com/LeperGnome/simple-chat/internal/session-keeper/application"
 	"github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
+	"github.com/google/uuid"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -13,8 +14,12 @@ func main() {
 	var config application.Config
 
 	envconfig.MustProcess("", &config)
+	groupUUID, err := uuid.NewRandom()
+	if err != nil {
+		panic(err)
+	}
 
-	bus, err := infrastructure.NewKafkaMessageBus("messages", "kafka:9092")
+	bus, err := infrastructure.NewKafkaMessageBus(groupUUID.String(), "messages", "kafka:9092")
 	if err != nil {
 		panic(err)
 	}
