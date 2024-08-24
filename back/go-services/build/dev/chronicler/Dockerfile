@@ -18,4 +18,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["air", "-c", "./build-dev/session-keeper/.air.toml"]
+CMD ["air", "-c", "./build/dev/chronicler/.air.toml"]

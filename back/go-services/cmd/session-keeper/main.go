@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/LeperGnome/simple-chat/internal/session-keeper/application"
+	"github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -13,8 +14,13 @@ func main() {
 
 	envconfig.MustProcess("", &config)
 
-	server := application.NewServer(config)
-	err := server.Run()
+	bus, err := infrastructure.NewKafkaMessageBus("messages", "kafka:9092")
+	if err != nil {
+		panic(err)
+	}
+
+	server := application.NewServer(config, bus)
+	err = server.Run()
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)

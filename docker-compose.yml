@@ -1,10 +1,10 @@
-# version: "3"
+version: "3"
 
 services:
   session-keeper:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/session-keeper/Dockerfile
+      dockerfile: ./build/dev/session-keeper/Dockerfile
     image: session-keeper-live
     container_name: ws-live-reload
     environment:
@@ -17,7 +17,7 @@ services:
   chat-api:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/chat-api/Dockerfile
+      dockerfile: ./build/dev/chat-api/Dockerfile
     image: chat-api-live
     container_name: chat-api
     working_dir: /app
@@ -41,12 +41,12 @@ services:
     volumes:
       - chronicler-db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "9993:5432"
 
   chronicler:
     build:
       context: ./back/go-services
-      dockerfile: ./build-dev/chronicler/Dockerfile
+      dockerfile: ./build/dev/chronicler/Dockerfile
     image: chronicler-live
     container_name: chronicler
     working_dir: /app
@@ -108,17 +108,17 @@ volumes:
     driver: local
     driver_opts:
       type: 'none'
-      device: './back/go-services'
+      device: ${PWD}/back/go-services
       o: bind
   chronicler-db:
     driver: local
     driver_opts:
       type: 'none'
-      device: './postgres_data'
+      device: ${PWD}/postgres_data
       o: bind
   chat-front:
     driver: local
     driver_opts:
       type: 'none'
-      device: './front/web'
+      device: ${PWD}/front/web
       o: bind
