@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"slices"
 	"sync"
+
+	"github.com/LeperGnome/simple-chat/internal/shared/domain"
 )
 
 type Client struct {
@@ -16,7 +18,7 @@ type Client struct {
 type Dispatcher struct {
 	conns map[string][]*Client
 	mu    sync.RWMutex
-	bus   MessageBus
+	bus   domain.MessageBus
 }
 
 func (d *Dispatcher) RegisterClient(client *Client) {
@@ -49,11 +51,7 @@ func (d *Dispatcher) readFromClient(client *Client) error {
 		if err != nil {
 			return err
 		}
-		newMessage := Message{
-			Content: string(msg),
-			From:    client.Name,
-			Channel: client.ChannelID,
-		}
+		newMessage := domain.NewMessage(string(msg), client.Name, client.ChannelID)
 		slog.Info("Got new message from ws", slog.Any("message", newMessage))
 		d.bus.Write(newMessage)
 	}
@@ -67,12 +65,12 @@ func (d *Dispatcher) Dispatch() {
 		}
 		slog.Info("Got new message from bus", slog.Any("message", newMessage))
 
-		channelConns, ok := d.conns[newMessage.Channel]
+		channelConns, ok := d.conns[newMessage.ChannelID]
 		if !ok {
 			continue // TODO?
 		}
 		for _, otherClient := range channelConns {
-			err = otherClient.Ws.WriteMessage(websocket.TextMessage, []byte(newMessage.From+": "+newMessage.Content))
+			err = otherClient.Ws.WriteMessage(websocket.TextMessage, []byte(newMessage.AuthorID+": "+newMessage.Content))
 			if err != nil {
 				continue // TODO?
 			}
@@ -80,7 +78,7 @@ func (d *Dispatcher) Dispatch() {
 	}
 }
 
-func NewDispatcher(bus MessageBus) *Dispatcher {
+func NewDispatcher(bus domain.MessageBus) *Dispatcher {
 	d := &Dispatcher{
 		mu:    sync.RWMutex{},
 		conns: map[string][]*Client{},

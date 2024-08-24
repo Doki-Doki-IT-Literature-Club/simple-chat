@@ -5,28 +5,21 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/LeperGnome/simple-chat/internal/shared/domain"
 	"github.com/jackc/pgx/v5"
 )
 
-type Repository struct {
+type PGMessageRepository struct {
 	conn *pgx.Conn
 }
 
-type Config struct {
-	DBUser     string
-	DBPassword string
-	DBHost     string
-	DBName     string
-}
-
-func NewRepository(config Config) (*Repository, error) {
+func NewPGMessageRepository(DBUser, DBPassword, DBHost, DBName string) (*PGMessageRepository, error) {
 	connString := fmt.Sprintf(
 		"postgres://%s:%s@%s/%s",
-		config.DBUser,
-		config.DBPassword,
-		config.DBHost,
-		config.DBName,
+		DBUser,
+		DBPassword,
+		DBHost,
+		DBName,
 	)
 
 	var conn *pgx.Conn
@@ -40,14 +33,19 @@ func NewRepository(config Config) (*Repository, error) {
 		}
 	}
 
-	return &Repository{conn: conn}, nil
+	repo := &PGMessageRepository{conn: conn}
+	err = repo.createMessageTable()
+	if err != nil {
+		return nil, err
+	}
+	return repo, nil
 }
 
-func (r *Repository) Close() error {
-	return r.conn.Close(context.Background())
+func (r *PGMessageRepository) Close(ctx context.Context) error {
+	return r.conn.Close(ctx)
 }
 
-func (r *Repository) CreateMessageTable() error {
+func (r *PGMessageRepository) createMessageTable() error {
 	_, err := r.conn.Exec(context.Background(), `
 		CREATE TABLE IF NOT EXISTS messages (
 			id TEXT PRIMARY KEY,
@@ -57,30 +55,10 @@ func (r *Repository) CreateMessageTable() error {
 			channel_id TEXT
 		)
 	`)
-
 	return err
 }
 
-type Message struct {
-	ID        string    `json:"id"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	AuthorID  string    `json:"author_id"`
-	ChannelID string    `json:"channel_id"`
-}
-
-// it shouldn't be here
-func NewMessage(content string, authorID string, channelID string) Message {
-	return Message{
-		ID:        uuid.New().String(),
-		Content:   content,
-		CreatedAt: time.Now(),
-		AuthorID:  authorID,
-		ChannelID: channelID,
-	}
-}
-
-func (r *Repository) InsertMessage(m Message) error {
+func (r *PGMessageRepository) InsertMessage(m domain.Message) error {
 	_, err := r.conn.Exec(context.Background(), `
 		INSERT INTO messages (id, content, created_at, author_id, channel_id)
 		VALUES ($1, $2, $3, $4, $5)
@@ -89,7 +67,7 @@ func (r *Repository) InsertMessage(m Message) error {
 	return err
 }
 
-func (r *Repository) GetMessages(channelID string) ([]Message, error) {
+func (r *PGMessageRepository) GetMessages(channelID string) ([]domain.Message, error) {
 	rows, err := r.conn.Query(context.Background(), `
 		SELECT id, content, created_at, author_id, channel_id
 		FROM messages
@@ -101,9 +79,9 @@ func (r *Repository) GetMessages(channelID string) ([]Message, error) {
 	}
 	defer rows.Close()
 
-	var messages []Message
+	var messages []domain.Message
 	for rows.Next() {
-		var m Message
+		var m domain.Message
 		err := rows.Scan(&m.ID, &m.Content, &m.CreatedAt, &m.AuthorID, &m.ChannelID)
 		if err != nil {
 			return nil, err
