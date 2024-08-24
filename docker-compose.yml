@@ -41,7 +41,7 @@ services:
     volumes:
       - chronicler-db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "9993:5432"
 
   chronicler:
     build:
@@ -108,17 +108,17 @@ volumes:
     driver: local
     driver_opts:
       type: 'none'
-      device: './back/go-services'
+      device: ${PWD}/back/go-services
       o: bind
   chronicler-db:
     driver: local
     driver_opts:
       type: 'none'
-      device: './postgres_data'
+      device: ${PWD}/postgres_data
       o: bind
   chat-front:
     driver: local
     driver_opts:
       type: 'none'
-      device: './front/web'
+      device: ${PWD}/front/web
       o: bind

@@ -1,10 +1,10 @@
 package domain
 
 import (
+	"github.com/gorilla/websocket"
 	"log/slog"
 	"slices"
 	"sync"
-	"github.com/gorilla/websocket"
 )
 
 type Client struct {

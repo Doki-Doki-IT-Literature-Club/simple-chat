@@ -43,8 +43,8 @@ func NewServer(config Config, bus dom.MessageBus) *Server {
 				return true
 			},
 		},
-        dispatcher: dom.NewDispatcher(bus),
-        config: config,
+		dispatcher: dom.NewDispatcher(bus),
+		config:     config,
 	}
 }
 

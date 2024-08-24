@@ -17,13 +17,13 @@ type KafkaMessageBus struct {
 }
 
 func (k *KafkaMessageBus) Read() (domain.Message, error) {
-    var newMessage domain.Message
-    msg, err := k.reader.ReadMessage(context.Background())
-    if err != nil {
-        slog.Error("Failed reading message from kafka: " + err.Error())
-        return newMessage, err
-    }
-    json.Unmarshal(msg.Value, &newMessage)
+	var newMessage domain.Message
+	msg, err := k.reader.ReadMessage(context.Background())
+	if err != nil {
+		slog.Error("Failed reading message from kafka: " + err.Error())
+		return newMessage, err
+	}
+	json.Unmarshal(msg.Value, &newMessage)
 
 	return newMessage, nil
 }
@@ -46,7 +46,7 @@ func NewKafkaMessageBus(
 ) (*KafkaMessageBus, error) {
 	groupUUID, err := uuid.NewRandom()
 	if err != nil {
-        return nil, err
+		return nil, err
 	}
 	groupName := groupUUID.String()
 

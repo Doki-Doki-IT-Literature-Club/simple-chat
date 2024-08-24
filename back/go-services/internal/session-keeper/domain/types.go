@@ -7,6 +7,6 @@ type Message struct {
 }
 
 type MessageBus interface {
-    Read() (Message, error)
-    Write(message Message) error
+	Read() (Message, error)
+	Write(message Message) error
 }
