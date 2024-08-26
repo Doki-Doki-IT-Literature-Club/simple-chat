@@ -7,6 +7,7 @@ import (
 	"time"
 
 	dom "github.com/LeperGnome/simple-chat/internal/session-keeper/domain"
+	sharedDom "github.com/LeperGnome/simple-chat/internal/shared/domain"
 	"github.com/gorilla/websocket"
 )
 
@@ -33,7 +34,7 @@ func (s *Server) Run() error {
 	return http.ListenAndServe(addr, mux)
 }
 
-func NewServer(config Config, bus dom.MessageBus) *Server {
+func NewServer(config Config, bus sharedDom.MessageBus) *Server {
 	return &Server{
 		upgrader: websocket.Upgrader{
 			HandshakeTimeout: config.HandshakeTimeout,
