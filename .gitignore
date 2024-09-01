@@ -1,3 +1,4 @@
 postgres_data
+auth_db
 .env
 tmp

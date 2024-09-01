@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/LeperGnome/simple-chat/internal/shared/domain"
-	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 )
 

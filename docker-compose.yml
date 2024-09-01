@@ -10,7 +10,7 @@ services:
     environment:
       - PORT=8081
     volumes:
-      - messaging:/app
+      - ./back/messaging:/app
     depends_on:
       - kafka
 
@@ -22,7 +22,7 @@ services:
     container_name: chat-api
     working_dir: /app
     volumes:
-      - messaging:/app
+      - ./back/messaging:/app
     depends_on:
       - chronicler-db
     environment:
@@ -39,7 +39,7 @@ services:
       POSTGRES_PASSWORD: $CHRONICLER_DB_PASS
       POSTGRES_DB: $CHRONICLER_DB_NAME
     volumes:
-      - chronicler-db:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - "9993:5432"
 
@@ -51,7 +51,7 @@ services:
     container_name: chronicler
     working_dir: /app
     volumes:
-      - messaging:/app
+      - ./back/messaging:/app
     depends_on:
       - kafka
       - chronicler-db
@@ -89,7 +89,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - chat-front:/app
+      - ./front/web:/app
     command: npm run dev
 
   api-gateway:
@@ -103,22 +103,37 @@ services:
       - session-keeper
       - chat-api
 
-volumes:
-  messaging:
-    driver: local
-    driver_opts:
-      type: 'none'
-      device: ${PWD}/back/messaging
-      o: bind
-  chronicler-db:
-    driver: local
-    driver_opts:
-      type: 'none'
-      device: ${PWD}/postgres_data
-      o: bind
-  chat-front:
-    driver: local
-    driver_opts:
-      type: 'none'
-      device: ${PWD}/front/web
-      o: bind
+  auth:
+    build:
+      context: ./back/auth
+      dockerfile: ./build/dev/auth/Dockerfile
+    image: auth-live
+    container_name: auth
+    working_dir: /app
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./back/auth:/app
+    environment:
+      AUTH_CLIENT_ID: $AUTH_CLIENT_ID
+      AUTH_CLIENT_SECRET: $AUTH_CLIENT_SECRET
+      DB_USER: $AUTH_DB_USER
+      DB_PASSWORD: $AUTH_DB_PASS
+      DB_NAME: $AUTH_DB_NAME
+      DB_HOST: $AUTH_DB_HOST
+      JWT_SECRET: 1234
+      PORT: 5556
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:latest
+    container_name: auth-db
+    environment:
+      POSTGRES_USER: $AUTH_DB_USER
+      POSTGRES_PASSWORD: $AUTH_DB_PASS
+      POSTGRES_DB: $AUTH_DB_NAME
+    volumes:
+      - ./auth_db:/var/lib/postgresql/data
+    ports:
+      - "9994:5432"
