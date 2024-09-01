@@ -1,9 +1,9 @@
-module github.com/LeperGnome/simple-chat
+module github.com/Doki-Doki-IT-Literature-Club/simple-chat
 
 go 1.22.3
 
 require (
-	github.com/LeperGnome/simple-chat/pkg/chronicler v0.0.0-20240818150125-9b63d8ce2460
+	github.com/Doki-Doki-IT-Literature-Club/simple-chat/pkg/chronicler v0.0.0-20240818150125-9b63d8ce2460
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/jackc/pgx/v5 v5.6.0

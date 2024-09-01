@@ -1,4 +1,4 @@
-module github.com/LeperGnome/auth
+module github.com/Doki-Doki-IT-Literature-Club/auth
 
 go 1.22.3
 

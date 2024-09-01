@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	dom "github.com/LeperGnome/simple-chat/internal/session-keeper/domain"
-	sharedDom "github.com/LeperGnome/simple-chat/internal/shared/domain"
+	dom "github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/session-keeper/domain"
+	sharedDom "github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
 	"github.com/gorilla/websocket"
 )
 

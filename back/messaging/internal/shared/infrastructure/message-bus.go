@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/LeperGnome/simple-chat/internal/shared/domain"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
 	"github.com/segmentio/kafka-go"
 )
 

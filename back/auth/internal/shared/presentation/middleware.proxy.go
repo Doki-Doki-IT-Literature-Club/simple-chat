@@ -6,7 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/LeperGnome/auth/internal/shared/application"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/application"
 )
 
 func NewProxyMiddleware(next http.Handler, userService *application.UserService) http.Handler {

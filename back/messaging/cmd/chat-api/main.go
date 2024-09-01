@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/LeperGnome/simple-chat/internal/chat-api/application"
-	"github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/chat-api/application"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/infrastructure"
 )
 
 func main() {

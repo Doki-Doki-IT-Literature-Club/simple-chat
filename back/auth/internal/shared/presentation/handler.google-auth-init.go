@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/LeperGnome/auth/internal/shared/application"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/application"
 )
 
 func NewGoogleAuthInitHandler(userService *application.UserService, googleAuthService *application.GoogleAuth) http.Handler {

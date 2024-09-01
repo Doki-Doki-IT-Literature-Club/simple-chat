@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/LeperGnome/auth/internal/shared/domain"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/domain"
 )
 
 type UserService struct {

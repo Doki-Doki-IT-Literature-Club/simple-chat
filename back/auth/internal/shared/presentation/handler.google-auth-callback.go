@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/LeperGnome/auth/internal/shared/application"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/application"
 )
 
 func NewGoogleAuthCallbackHandler(userService *application.UserService, googleAuthService *application.GoogleAuth) http.Handler {

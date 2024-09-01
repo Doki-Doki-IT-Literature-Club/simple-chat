@@ -6,7 +6,7 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/LeperGnome/simple-chat/internal/shared/domain"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
 )
 
 type Client struct {

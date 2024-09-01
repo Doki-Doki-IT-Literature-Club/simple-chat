@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/LeperGnome/auth/internal/shared/application"
-	"github.com/LeperGnome/auth/internal/shared/infrastructure"
-	"github.com/LeperGnome/auth/internal/shared/presentation"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/application"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/infrastructure"
+	"github.com/Doki-Doki-IT-Literature-Club/auth/internal/shared/presentation"
 )
 
 var (

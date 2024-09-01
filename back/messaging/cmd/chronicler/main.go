@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/LeperGnome/simple-chat/internal/chronicler/domain"
-	"github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/chronicler/domain"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/infrastructure"
 )
 
 const (

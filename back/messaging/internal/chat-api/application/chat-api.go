@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/LeperGnome/simple-chat/internal/shared/domain"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
 )
 
 func NewServer(addr string, repo domain.MessageRepository) *http.Server {

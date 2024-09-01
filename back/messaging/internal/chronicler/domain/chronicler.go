@@ -3,7 +3,7 @@ package domain
 import (
 	"log/slog"
 
-	sharedDom "github.com/LeperGnome/simple-chat/internal/shared/domain"
+	sharedDom "github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
 )
 
 func SyncMessages(repo sharedDom.MessageRepository, bus sharedDom.MessageBus) error {

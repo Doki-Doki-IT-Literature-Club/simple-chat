@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/LeperGnome/simple-chat/internal/session-keeper/application"
-	"github.com/LeperGnome/simple-chat/internal/shared/infrastructure"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/session-keeper/application"
+	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/infrastructure"
 	"github.com/google/uuid"
 	"github.com/kelseyhightower/envconfig"
 )
