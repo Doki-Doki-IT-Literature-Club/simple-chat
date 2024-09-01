@@ -1,0 +1,21 @@
+.Message {
+  width: fit-content;
+  min-width: 120px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+
+.Left {
+  display: flex;
+  flex-direction: column;
+}
+
+.Date {
+  display: flex;
+  align-self: flex-end;
+  opacity: 0.5;
+}

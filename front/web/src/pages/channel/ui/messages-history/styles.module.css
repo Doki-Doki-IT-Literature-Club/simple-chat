@@ -1,0 +1,17 @@
+.Container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.Date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: grey;
+  color: white;
+  align-self: center;
+  padding: 3px 5px;
+  border-radius: 12px;
+}

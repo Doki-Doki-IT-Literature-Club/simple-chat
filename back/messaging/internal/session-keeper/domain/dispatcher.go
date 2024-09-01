@@ -1,12 +1,14 @@
 package domain
 
 import (
-	"github.com/gorilla/websocket"
+	"encoding/json"
+	"fmt"
 	"log/slog"
 	"slices"
 	"sync"
 
 	"github.com/Doki-Doki-IT-Literature-Club/simple-chat/internal/shared/domain"
+	"github.com/gorilla/websocket"
 )
 
 type Client struct {
@@ -70,7 +72,12 @@ func (d *Dispatcher) Dispatch() {
 			continue // TODO?
 		}
 		for _, otherClient := range channelConns {
-			err = otherClient.Ws.WriteMessage(websocket.TextMessage, []byte(newMessage.AuthorID+": "+newMessage.Content))
+			jsonData, err := json.Marshal(newMessage)
+			if err != nil {
+				fmt.Println("Error marshaling message to JSON:", err)
+				continue // TODO?
+			}
+			err = otherClient.Ws.WriteMessage(websocket.TextMessage, jsonData)
 			if err != nil {
 				continue // TODO?
 			}

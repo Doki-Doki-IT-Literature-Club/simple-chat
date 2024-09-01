@@ -1,0 +1,8 @@
+.ChatPage {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 100px;
+  background-color: gainsboro;
+}
