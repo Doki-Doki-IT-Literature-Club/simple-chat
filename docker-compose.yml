@@ -122,6 +122,7 @@ services:
       DB_NAME: $AUTH_DB_NAME
       DB_HOST: $AUTH_DB_HOST
       JWT_SECRET: 1234
+      PORT: 5556
     depends_on:
       - auth-db
 
